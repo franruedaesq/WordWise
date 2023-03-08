@@ -2,7 +2,6 @@ import { DynamoDBClient, PutItemCommand, GetItemCommand, GetItemCommandInput } f
 import { IItem } from "./item";
 
 export const addItemToDynamoDB = async (accessKeyId: string, secretAccessKey: string, item: IItem): Promise<void> => {
-  console.log(item, accessKeyId, secretAccessKey)
   const client = new DynamoDBClient({
     region: "us-east-1", // Cambia esto a la región de tu tabla de DynamoDB
     credentials: {
@@ -10,7 +9,6 @@ export const addItemToDynamoDB = async (accessKeyId: string, secretAccessKey: st
       secretAccessKey: secretAccessKey,
     },
   });
-  console.log(item)
   const params = {
     TableName: "word-wise-store",
     Item: {
