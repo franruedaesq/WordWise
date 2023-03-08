@@ -85,14 +85,12 @@ const Home: React.FC = () => {
     });
 
     const data = await resp.json()
-    console.log(data.response.content)
     setNewText(data.response.content)
   }
 
   useEffect(() => {
     try {
       const textContent: TextObj = JSON.parse(newText)
-      console.log(textContent)
       setGeneratedText(textContent.text)
       setGeneratedTitle(textContent.title)
     } catch (error) {

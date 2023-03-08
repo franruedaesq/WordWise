@@ -50,7 +50,6 @@ export default async function handler(
 
   // Parse the request body as JSON
   const { textType, textSize, textDifficulty } = req.body as RequestBody;
-  console.log("are we calling this?", textType)
   try {
     // Generate text using GPT-3.5 Turbo model
     const completion = await openai.createChatCompletion({
@@ -71,7 +70,6 @@ export default async function handler(
             }`},
         ],
       });
-    console.log(completion.data.choices[0].message)
     // Send the generated text as the response
     res.status(200).json({ response: completion.data.choices[0].message});
   } catch (err) {
