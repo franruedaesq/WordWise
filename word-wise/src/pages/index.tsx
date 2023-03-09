@@ -19,6 +19,12 @@ import { fetchText } from '@/utils/openAI';
 import { fetchFlashcards } from '../utils/openAI';
 import LoaderComponent from '@/components/Loader';
 import { setLoading } from '@/store/reducers/loader';
+import { saveLearningContent } from '@/utils/dynamodb';
+
+interface FlashcardResp {
+  content: string;
+  role: string;
+}
 
 const Home: React.FC = () => {
   const dispatch = useDispatch();
@@ -36,6 +42,7 @@ const Home: React.FC = () => {
   const prevNewText = useRef('');
   const [newText, setNewText] = useState<string>("{}");
   const [newTextId, setNewTextId] = useState<string>("");
+  const [flashcardsarray, setFlashcardsArray] = useState<Flashcard[]>([])
 
 
 
@@ -62,16 +69,19 @@ const Home: React.FC = () => {
     })
     try {
       const flashcardContent: {flashcards:Flashcard[]} = JSON.parse(respFlashcards.content);
+      setFlashcardsArray(flashcardContent.flashcards)
       dispatch(setFlashcards({ 
         id: newTextId, 
-        flashcards: flashcardContent.flashcards        , 
+        flashcards: flashcardContent.flashcards, 
         title: generatedTitle, 
         text: generatedText, 
         type: selectedType, 
         size: selectedSize, 
         difficulty: selectedDifficulty }))
+      
     } catch (error) {
       console.log(error);
+      handleGetFlashcards();
     }
   }
 
@@ -86,6 +96,23 @@ const Home: React.FC = () => {
   const handleDifficultyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDifficulty((event.target as HTMLInputElement).value);
   };
+
+  const saveContentInDatabase = async () => {
+    if (flashcardsarray.length > 0) {
+      await saveLearningContent({ 
+        id: newTextId, 
+        flashcards: flashcardsarray, 
+        title: generatedTitle, 
+        text: generatedText, 
+        type: selectedType, 
+        size: selectedSize, 
+        difficulty: selectedDifficulty })
+    }
+  }
+
+  useEffect(() => {
+    saveContentInDatabase()
+  }, [flashcardsarray])
 
 
 
@@ -102,6 +129,7 @@ const Home: React.FC = () => {
         }
       } catch (error) {
         console.log(error);
+        handleGenerate();
       }
       prevNewText.current = newText;
     }
