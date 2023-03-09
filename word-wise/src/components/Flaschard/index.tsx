@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import ReactCardFlip from 'react-card-flip';
-import { Button, Typography } from '@mui/material';
+import { Button, Typography, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
 
 interface FlashcardProps {
@@ -19,6 +19,8 @@ const FlashcardContainer = styled('div')({
 });
 
 const Flashcard = ({ frontText, backText, onSuccess: onCorrectClick, onError: onIncorrectClick }: FlashcardProps) => {
+  const theme = useTheme(); // use the useTheme hook to access the current theme object
+
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
     // Only render the component on the client-side
     const [rendered, setRendered] = useState<boolean>(false);
@@ -44,7 +46,7 @@ const Flashcard = ({ frontText, backText, onSuccess: onCorrectClick, onError: on
 
   return (
     <FlashcardContainer onClick={handleClick} >
-      <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal" containerStyle={{ width: "250px", height: "400px", background: "white", color:"black" }}>
+      <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal" containerStyle={{ width: "250px", height: "400px", margin: "10px", borderRadius: "10px", background: theme.palette.background.paper, color: theme.palette.text.primary }}>
         <div style={{ height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Typography variant="h6">{frontText}</Typography>
         </div>

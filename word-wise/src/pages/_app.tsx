@@ -1,14 +1,20 @@
-import '../styles/globals.css'
-import { Experimental_CssVarsProvider as CssVarsProvider }from '@mui/material/styles';
-
+// import '../styles/globals.css'
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import type { AppProps } from 'next/app'
-import theme from '@/theme';
+import { lightTheme, darkTheme } from '@/theme';
+import { useState } from 'react';
 
 
 export default function App({ Component, pageProps }: AppProps) {
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  const theme = isDarkMode ? darkTheme : lightTheme;
+
   return (
-    <CssVarsProvider theme={theme}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Component {...pageProps} />
-    </CssVarsProvider>
+    </ThemeProvider>
   )
 }

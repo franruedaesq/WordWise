@@ -5,7 +5,7 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head>Word Wise</Head>
+        <Head></Head>
         <body>
           {getInitColorSchemeScript()}
           <Main />
