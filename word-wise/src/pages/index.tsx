@@ -17,10 +17,13 @@ import { setData, setFlashcards } from '@/store/reducers/openAIReducer';
 import { v4 as uuidv4 } from 'uuid';
 import { fetchText } from '@/utils/openAI';
 import { fetchFlashcards } from '../utils/openAI';
+import LoaderComponent from '@/components/Loader';
+import { setLoading } from '@/store/reducers/loader';
 
 const Home: React.FC = () => {
   const dispatch = useDispatch();
-  const data = useSelector((state: RootState) => state.openAIreducer);
+  // const data = useSelector((state: RootState) => state.openAIreducer);
+  const isLoading = useSelector((state: RootState) => state.loading.isLoading);
 
   const [selectedType, setSelectedType] = useState<string>('dialogue');
   const [selectedSize, setSelectedSize] = useState<string>('medium');
@@ -34,21 +37,31 @@ const Home: React.FC = () => {
   const [newText, setNewText] = useState<string>("{}");
   const [newTextId, setNewTextId] = useState<string>("");
 
+
+
   const handleGenerate = async () => {
     setGeneratedText("")
     setGeneratedTitle({
       german: "",
       english: "",
     })
+    dispatch(setLoading(true));
     const respText = await fetchText(selectedType, selectedSize, selectedDifficulty)
-    setNewText(respText)
+    .then((resp) => {
+      setNewText(resp)
+      dispatch(setLoading(false))
+    })
   };
 
   const handleGetFlashcards = async () => {
+    dispatch(setLoading(true));
     const respFlashcards = await fetchFlashcards(generatedText, newTextId)
+    .then((resp) => {
+      dispatch(setLoading(false));
+      return resp
+    })
     try {
       const flashcardContent: {flashcards:Flashcard[]} = JSON.parse(respFlashcards.content);
-      console.log(flashcardContent)
       dispatch(setFlashcards({ 
         id: newTextId, 
         flashcards: flashcardContent.flashcards        , 
@@ -57,14 +70,6 @@ const Home: React.FC = () => {
         type: selectedType, 
         size: selectedSize, 
         difficulty: selectedDifficulty }))
-        console.log({ 
-          id: newTextId, 
-          flashcards: flashcardContent, 
-          title: generatedTitle, 
-          text: generatedText, 
-          type: selectedType, 
-          size: selectedSize, 
-          difficulty: selectedDifficulty })
     } catch (error) {
       console.log(error);
     }
@@ -155,6 +160,8 @@ const Home: React.FC = () => {
       </Box>
 
       <Box display="flex" flexDirection="column" alignItems="center">
+        {isLoading ? <LoaderComponent/> : 
+        <div>
         <Box display="flex" mt={4} ml={3}>
           <Typography variant="h5" component="h4" gutterBottom mr={1}>
             {generatedTitle?.german}
@@ -163,15 +170,14 @@ const Home: React.FC = () => {
             {generatedTitle?.english && `(${generatedTitle?.english})`}
           </Typography>
         </Box>
-        {/* <Typography variant="h6" component="h4" gutterBottom>
-        {generatedTitle?.german} - {generatedTitle?.english}
-      </Typography> */}
         <Typography variant="body1" component="p" gutterBottom whiteSpace="pre-line" mt={1} ml={3}>
           {generatedText && generatedText}
         </Typography>
         {generatedText && <Button variant="contained" color="primary" onClick={handleGetFlashcards} size="small" sx={{ maxWidth: "250px" }}>
           Get Flashcards
         </Button>}
+        </div>
+        }
       </Box>
     </div>
   );

@@ -39,7 +39,7 @@ const Dashboard: React.FC = () => {
     setCurrentFlashcardIndex(currentFlashcardIndex + 1);
   };
 
-  const currentFlashcard = learningContent[0].flashcards[currentFlashcardIndex];
+  // const currentFlashcard = learningContent[0]?.flashcards[currentFlashcardIndex];
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -64,12 +64,12 @@ const Dashboard: React.FC = () => {
       </AppBar>
       <Box sx={{ p: 2 }}>
         <Grid container spacing={2}>
-          <Flashcard
+          {/* <Flashcard
             frontText={currentFlashcard.front}
             backText={currentFlashcard.back}
             onSuccess={handleSuccess}
             onError={handleError}
-          />
+          /> */}
         </Grid>
       </Box>
     </Box>

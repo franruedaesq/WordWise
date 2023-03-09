@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import store from '../store';
 
 
+
 export default function App({ Component, pageProps }: AppProps) {
   const [isDarkMode, setIsDarkMode] = useState(true);
 
