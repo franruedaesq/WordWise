@@ -1,8 +1,10 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import openAIreducer from '../store/reducers/openAIReducer';
+import loaderReducer from '../store/reducers/loader';
 
 const rootReducer = combineReducers({
   openAIreducer,
+  loading: loaderReducer,
   // Add other reducers here
 });
 
