@@ -86,7 +86,7 @@ export const darkTheme = createTheme({
       fontSize: '2.5rem',
     },
     body1: {
-      fontSize: '1.2rem',
+      fontSize: '1rem',
       lineHeight: '1.5',
     },
   },
