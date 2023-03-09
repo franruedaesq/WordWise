@@ -156,7 +156,7 @@ const Home: React.FC = () => {
           {generatedTitle?.german}
         </Typography> 
         <Typography variant="h5" component="h5" gutterBottom>
-           {generatedTitle?.english}
+           {generatedTitle?.english && `(${generatedTitle?.english})`}
         </Typography>
       </Box>
       {/* <Typography variant="h6" component="h4" gutterBottom>

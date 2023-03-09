@@ -3,7 +3,7 @@ export const fakeData = [
       id: "1",
       title: {
         german: "Der Waldspaziergang",
-        spanish: "El paseo por el bosque",
+        english: "El paseo por el bosque",
       },
       text: "Es war einmal ein kleiner Bär namens Bruno. Er wohnte in einem gemütlichen Haus am Rande des Waldes. Eines Tages beschloss er, einen Spaziergang durch den Wald zu machen...",
       type: "story",
@@ -31,7 +31,7 @@ export const fakeData = [
       id: "2",
       title: {
         german: "Deutschland im Überblick",
-        spanish: "Alemania en resumen",
+        english: "Alemania en resumen",
       },
       text: "Deutschland ist ein Land in Mitteleuropa. Es hat 83 Millionen Einwohner und eine Fläche von 357.000 Quadratkilometern. Die Hauptstadt ist Berlin...",
       type: "data",

@@ -10,6 +10,7 @@ import {
   IconButton,
   Toolbar,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { fakeData } from '@/utils/fakeData';
 import { FakeData } from '@/types';
@@ -22,6 +23,7 @@ interface IFlashcard {
 }
 
 const Dashboard: React.FC = () => {
+  const theme = useTheme();
   const [learningContent, setLearningContent] = useState<FakeData>(fakeData);
   const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState<number>(0);
 
@@ -41,12 +43,12 @@ const Dashboard: React.FC = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar>
+      <AppBar position="static" sx={{ backgroundColor: theme.palette.background.default }} >
+        <Toolbar >
           <IconButton
             size="large"
             edge="start"
-            color="inherit"
+            color="primary"
             aria-label="menu"
             sx={{ mr: 2 }}
           >
