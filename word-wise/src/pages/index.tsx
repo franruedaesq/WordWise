@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Box,
   Button,
@@ -10,21 +11,16 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { Generatedtitle, TextObj } from '@/types';
+import { RootState } from '@/types/store';
+import { setData } from '@/store/reducers/openAIReducer';
+import { v4 as uuidv4 } from 'uuid';
+
 
 interface TextParams {
   textType: string;
   textSize: string;
   textDifficulty: string;
-}
-
-interface Generatedtitle {
-  german: string;
-  english: string;
-}
-
-interface TextObj {
-  title: Generatedtitle;
-  text: string;
 }
 
 interface ResponseData {
@@ -36,6 +32,9 @@ interface ResponseData {
 
 
 const Home: React.FC = () => {
+  const dispatch = useDispatch();
+  const data = useSelector((state: RootState) => state.openAIreducer);
+
   const [selectedType, setSelectedType] = useState<string>('dialogue');
   const [selectedSize, setSelectedSize] = useState<string>('medium');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('easy');
@@ -44,7 +43,7 @@ const Home: React.FC = () => {
     german: "",
     english: "",
   });
-
+  const prevNewText = useRef('');
   const [newText, setNewText] = useState<string>("{}");
 
   const handleGenerate = async () => {
@@ -85,16 +84,24 @@ const Home: React.FC = () => {
     });
 
     const data = await resp.json()
+    console.log(data.response.content)
     setNewText(data.response.content)
   }
 
   useEffect(() => {
-    try {
-      const textContent: TextObj = JSON.parse(newText)
-      setGeneratedText(textContent.text)
-      setGeneratedTitle(textContent.title)
-    } catch (error) {
-      console.log(error)
+    if (newText && newText !== prevNewText.current) {
+      try {
+        const textContent: TextObj = JSON.parse(newText);
+        console.log(textContent)
+        if (Object.keys(textContent).length !== 0) { // check if textContent is not an empty object
+          dispatch(setData({id: uuidv4(),...textContent, type: selectedType, size: selectedSize, difficulty: selectedDifficulty}));
+          setGeneratedText(textContent.text);
+          setGeneratedTitle(textContent.title);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      prevNewText.current = newText;
     }
   }, [newText]);
 
