@@ -35,7 +35,7 @@ export default async function handler(
         model: "gpt-3.5-turbo",
         messages: [
             {role: "system", content: "You are german writer and language investigator, you work for a publishing house writing dialogues, stories and texts in german for german language learning books."},
-            {role: "user", content: `i need you to provide me with a ${textType} that must have a ${textDifficulty} difficulty and must be ${textSize} size.
+            {role: "user", content: `i need you to provide me with a ${textType} that must have a ${textDifficulty} difficulty and must be around ${textSize} size.
 
             the answer must fallow this structure, i dont need anything else, just answer with the correct this structure:
             

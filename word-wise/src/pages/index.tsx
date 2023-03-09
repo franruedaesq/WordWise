@@ -32,7 +32,7 @@ const Home: React.FC = () => {
   const isLoading = useSelector((state: RootState) => state.loading.isLoading);
 
   const [selectedType, setSelectedType] = useState<string>('dialogue');
-  const [selectedSize, setSelectedSize] = useState<string>('medium');
+  const [selectedSize, setSelectedSize] = useState<string>('25 words');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('easy');
   const [generatedText, setGeneratedText] = useState<string>('');
   const [generatedTitle, setGeneratedTitle] = useState<Generatedtitle>({
@@ -163,9 +163,9 @@ const Home: React.FC = () => {
               value={selectedSize}
               onChange={handleSizeChange}
             >
-              <FormControlLabel value="short" control={<Radio />} label="Short" />
-              <FormControlLabel value="medium" control={<Radio />} label="Medium" />
-              <FormControlLabel value="large" control={<Radio />} label="Large" />
+              <FormControlLabel value="25 words" control={<Radio />} label="Short" />
+              <FormControlLabel value="40 words" control={<Radio />} label="Medium" />
+              <FormControlLabel value="55 words" control={<Radio />} label="Large" />
             </RadioGroup>
           </FormControl>
           <FormControl component="fieldset">
@@ -187,10 +187,10 @@ const Home: React.FC = () => {
         </Button>
       </Box>
 
-      <Box display="flex" flexDirection="column" alignItems="center">
+      <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" maxWidth={1000} margin="0 auto">
         {isLoading ? <LoaderComponent/> : 
-        <div>
-        <Box display="flex" mt={4} ml={3}>
+        <div style={{display:"flex", flexDirection:"column", alignItems:"center"}}>
+        <Box display="flex" mt={4} ml={3} flexWrap="wrap">
           <Typography variant="h5" component="h4" gutterBottom mr={1}>
             {generatedTitle?.german}
           </Typography>
@@ -201,7 +201,7 @@ const Home: React.FC = () => {
         <Typography variant="body1" component="p" gutterBottom whiteSpace="pre-line" mt={1} ml={3}>
           {generatedText && generatedText}
         </Typography>
-        {generatedText && <Button variant="contained" color="primary" onClick={handleGetFlashcards} size="small" sx={{ maxWidth: "250px" }}>
+        {generatedText && <Button variant="contained" color="primary" onClick={handleGetFlashcards} size="small" sx={{ maxWidth: "250px", marginTop:"20px" }}>
           Get Flashcards
         </Button>}
         </div>
