@@ -1,3 +1,5 @@
+import { LearningContent } from "@/types";
+
 export interface IItem {
     id: string;
     UserId: string;
@@ -10,3 +12,5 @@ export interface IItem {
       QuizzesCompleted: number;
     };
   }
+
+  export interface IContentItem extends LearningContent{}

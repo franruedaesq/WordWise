@@ -18,7 +18,12 @@ export async function fetchText(textType: string, textSize: string, textDifficul
     const data = await resp.json()
     return data.response.content
   }
-
+interface FlashcardResp {
+  response: {
+    content: string;
+    role: string;
+  }
+}
 export async function fetchFlashcards(text: string, id: string) {
     const params: FlashcardParams = {
       text,
@@ -32,6 +37,6 @@ export async function fetchFlashcards(text: string, id: string) {
       },
       body: JSON.stringify(params)
     });
-    const data = await resp.json()
+    const data: FlashcardResp = await resp.json()
     return{id: id, content: data.response.content}
   }
