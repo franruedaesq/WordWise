@@ -58,7 +58,7 @@ export default async function handler(
             {role: "system", content: "You are german writer and language investigator, you work for a publishing house writing dialogues, stories and texts in german for german language learning books."},
             {role: "user", content: `i need you to provide me with a ${textType} that must have a ${textDifficulty} difficulty and must be ${textSize} size.
 
-            the answer must fallow this structure for your answer, i dont need Translation or anything else:
+            the answer must fallow this structure, i dont need anything else, just answer with the correct this structure:
             
             {
               "title": {
@@ -67,7 +67,20 @@ export default async function handler(
               },
             "text": "",
 
-            }`},
+            }
+            
+            this is an example of what you will answer:
+
+            {
+              "title": {
+                "german": "Der Waldspaziergang",
+                "english": "El paseo por el bosque",
+              },
+              "text": "Es war einmal ein kleiner Bär namens Bruno. Er wohnte in einem gemütlichen Haus am Rande des Waldes. Eines Tages beschloss er, einen Spaziergang durch den Wald zu machen...",
+            },
+
+            `
+          },
         ],
       });
     // Send the generated text as the response

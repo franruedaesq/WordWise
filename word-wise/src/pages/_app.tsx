@@ -4,6 +4,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import type { AppProps } from 'next/app'
 import { lightTheme, darkTheme } from '@/theme';
 import { useState } from 'react';
+import { Provider } from 'react-redux';
+import store from '../store';
 
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -14,7 +16,9 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Component {...pageProps} />
+      <Provider store={store}>
+        <Component {...pageProps} />
+      </Provider>
     </ThemeProvider>
   )
 }

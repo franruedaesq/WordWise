@@ -21,3 +21,21 @@ interface Flashcard {
   
 export type FakeData = LearningContent[];
   
+export interface Generatedtitle {
+  german: string;
+  english: string;
+}
+
+export interface TextObj {
+  title: Generatedtitle;
+  text: string;
+}
+
+export interface LearningText {
+  id: string;
+  title: Generatedtitle;
+  text: string;
+  type: string;
+  size: string;
+  difficulty: string;
+}
