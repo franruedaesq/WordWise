@@ -1,27 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { ChatCompletionResponseMessage, Configuration, OpenAIApi } from 'openai';
 
-interface ChatCompletionResponse {
-    id: string;
-    object: string;
-    created: number;
-    choices: {
-      index: number;
-      message: {
-        role: string;
-        content: string;
-      };
-      finish_reason: string;
-    }[];
-    usage: {
-      prompt_tokens: number;
-      completion_tokens: number;
-      total_tokens: number;
-    };
-  }
-  
-
-
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_SECRET_KEY,
 });

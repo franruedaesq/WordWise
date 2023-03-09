@@ -11,25 +11,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Generatedtitle, TextObj } from '@/types';
+import { Flashcard, FlashCardObject, Generatedtitle, TextObj } from '@/types';
 import { RootState } from '@/types/store';
-import { setData } from '@/store/reducers/openAIReducer';
+import { setData, setFlashcards } from '@/store/reducers/openAIReducer';
 import { v4 as uuidv4 } from 'uuid';
-
-
-interface TextParams {
-  textType: string;
-  textSize: string;
-  textDifficulty: string;
-}
-
-interface ResponseData {
-  response: {
-    role: string;
-    content: TextObj
-  };
-}
-
+import { fetchText } from '@/utils/openAI';
+import { fetchFlashcards } from '../utils/openAI';
 
 const Home: React.FC = () => {
   const dispatch = useDispatch();
@@ -45,16 +32,43 @@ const Home: React.FC = () => {
   });
   const prevNewText = useRef('');
   const [newText, setNewText] = useState<string>("{}");
+  const [newTextId, setNewTextId] = useState<string>("");
 
   const handleGenerate = async () => {
-    // TODO: Implement ChatGPT API call to generate text
     setGeneratedText("")
     setGeneratedTitle({
       german: "",
       english: "",
     })
-    fetchData(selectedType, selectedSize, selectedDifficulty)
+    const respText = await fetchText(selectedType, selectedSize, selectedDifficulty)
+    setNewText(respText)
   };
+
+  const handleGetFlashcards = async () => {
+    const respFlashcards = await fetchFlashcards(generatedText, newTextId)
+    try {
+      const flashcardContent: {flashcards:Flashcard[]} = JSON.parse(respFlashcards.content);
+      console.log(flashcardContent)
+      dispatch(setFlashcards({ 
+        id: newTextId, 
+        flashcards: flashcardContent.flashcards        , 
+        title: generatedTitle, 
+        text: generatedText, 
+        type: selectedType, 
+        size: selectedSize, 
+        difficulty: selectedDifficulty }))
+        console.log({ 
+          id: newTextId, 
+          flashcards: flashcardContent, 
+          title: generatedTitle, 
+          text: generatedText, 
+          type: selectedType, 
+          size: selectedSize, 
+          difficulty: selectedDifficulty })
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedType((event.target as HTMLInputElement).value);
@@ -68,33 +82,16 @@ const Home: React.FC = () => {
     setSelectedDifficulty((event.target as HTMLInputElement).value);
   };
 
-  async function fetchData(textType: string, textSize: string, textDifficulty: string) {
-    const params: TextParams = {
-      textType,
-      textSize,
-      textDifficulty,
-    };
 
-    const resp = await fetch('/api/openAI/getText', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(params)
-    });
-
-    const data = await resp.json()
-    console.log(data.response.content)
-    setNewText(data.response.content)
-  }
 
   useEffect(() => {
     if (newText && newText !== prevNewText.current) {
       try {
         const textContent: TextObj = JSON.parse(newText);
-        console.log(textContent)
         if (Object.keys(textContent).length !== 0) { // check if textContent is not an empty object
-          dispatch(setData({id: uuidv4(),...textContent, type: selectedType, size: selectedSize, difficulty: selectedDifficulty}));
+          const textId = uuidv4();
+          setNewTextId(textId)
+          dispatch(setData({ id: textId, ...textContent, type: selectedType, size: selectedSize, difficulty: selectedDifficulty, flashcards: [] }));
           setGeneratedText(textContent.text);
           setGeneratedTitle(textContent.title);
         }
@@ -108,70 +105,73 @@ const Home: React.FC = () => {
   return (
     <div>
       <Box display='flex' flexDirection='column' alignItems="center" justifyContent="space-evenly" height="300px">
-      <Typography variant="h4" component="h1" gutterBottom>
-        Generate German Text
-      </Typography>
-      <Box display='flex'>
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Type of Text</FormLabel>
-        <RadioGroup
-          aria-label="text-type"
-          name="text-type"
-          value={selectedType}
-          onChange={handleTypeChange}
-        >
-          <FormControlLabel value="dialogue" control={<Radio />} label="Dialogue" />
-          <FormControlLabel value="story" control={<Radio />} label="Story" />
-          <FormControlLabel value="data" control={<Radio />} label="Random Data" />
-        </RadioGroup>
-      </FormControl>
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Size of Text</FormLabel>
-        <RadioGroup
-          aria-label="text-size"
-          name="text-size"
-          value={selectedSize}
-          onChange={handleSizeChange}
-        >
-          <FormControlLabel value="short" control={<Radio />} label="Short" />
-          <FormControlLabel value="medium" control={<Radio />} label="Medium" />
-          <FormControlLabel value="large" control={<Radio />} label="Large" />
-        </RadioGroup>
-      </FormControl>
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Difficulty</FormLabel>
-        <RadioGroup
-          aria-label="text-difficulty"
-          name="text-difficulty"
-          value={selectedDifficulty}
-          onChange={handleDifficultyChange}
-        >
-          <FormControlLabel value="easy" control={<Radio />} label="Easy" />
-          <FormControlLabel value="medium" control={<Radio />} label="Medium" />
-          <FormControlLabel value="expert" control={<Radio />} label="Expert" />
-        </RadioGroup>
-      </FormControl>
-      </Box>
-      <Button variant="contained" color="primary" onClick={handleGenerate} size="small" sx={{ maxWidth: "250px"}}>
-        Generate
-      </Button>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Generate German Text
+        </Typography>
+        <Box display='flex'>
+          <FormControl component="fieldset">
+            <FormLabel component="legend">Type of Text</FormLabel>
+            <RadioGroup
+              aria-label="text-type"
+              name="text-type"
+              value={selectedType}
+              onChange={handleTypeChange}
+            >
+              <FormControlLabel value="dialogue" control={<Radio />} label="Dialogue" />
+              <FormControlLabel value="story" control={<Radio />} label="Story" />
+              <FormControlLabel value="data" control={<Radio />} label="Random Data" />
+            </RadioGroup>
+          </FormControl>
+          <FormControl component="fieldset">
+            <FormLabel component="legend">Size of Text</FormLabel>
+            <RadioGroup
+              aria-label="text-size"
+              name="text-size"
+              value={selectedSize}
+              onChange={handleSizeChange}
+            >
+              <FormControlLabel value="short" control={<Radio />} label="Short" />
+              <FormControlLabel value="medium" control={<Radio />} label="Medium" />
+              <FormControlLabel value="large" control={<Radio />} label="Large" />
+            </RadioGroup>
+          </FormControl>
+          <FormControl component="fieldset">
+            <FormLabel component="legend">Difficulty</FormLabel>
+            <RadioGroup
+              aria-label="text-difficulty"
+              name="text-difficulty"
+              value={selectedDifficulty}
+              onChange={handleDifficultyChange}
+            >
+              <FormControlLabel value="easy" control={<Radio />} label="Easy" />
+              <FormControlLabel value="medium" control={<Radio />} label="Medium" />
+              <FormControlLabel value="expert" control={<Radio />} label="Expert" />
+            </RadioGroup>
+          </FormControl>
+        </Box>
+        <Button variant="contained" color="primary" onClick={handleGenerate} size="small" sx={{ maxWidth: "250px" }}>
+          Generate
+        </Button>
       </Box>
 
       <Box display="flex" flexDirection="column" alignItems="center">
-      <Box display="flex" mt={4} ml={3}>
-        <Typography variant="h5" component="h4" gutterBottom mr={1}>
-          {generatedTitle?.german}
-        </Typography> 
-        <Typography variant="h5" component="h5" gutterBottom>
-           {generatedTitle?.english && `(${generatedTitle?.english})`}
-        </Typography>
-      </Box>
-      {/* <Typography variant="h6" component="h4" gutterBottom>
+        <Box display="flex" mt={4} ml={3}>
+          <Typography variant="h5" component="h4" gutterBottom mr={1}>
+            {generatedTitle?.german}
+          </Typography>
+          <Typography variant="h5" component="h5" gutterBottom>
+            {generatedTitle?.english && `(${generatedTitle?.english})`}
+          </Typography>
+        </Box>
+        {/* <Typography variant="h6" component="h4" gutterBottom>
         {generatedTitle?.german} - {generatedTitle?.english}
       </Typography> */}
-      <Typography variant="body1" component="p" gutterBottom whiteSpace="pre-line" mt={1} ml={3}>
+        <Typography variant="body1" component="p" gutterBottom whiteSpace="pre-line" mt={1} ml={3}>
           {generatedText && generatedText}
-      </Typography> 
+        </Typography>
+        {generatedText && <Button variant="contained" color="primary" onClick={handleGetFlashcards} size="small" sx={{ maxWidth: "250px" }}>
+          Get Flashcards
+        </Button>}
       </Box>
     </div>
   );
