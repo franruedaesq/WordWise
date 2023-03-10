@@ -16,7 +16,7 @@ export interface Flashcard {
     type: string;
     size: string;
     difficulty: string;
-    flashcards?: Flashcard[] | undefined;
+    flashcards: Flashcard[];
   }
   
 export type FakeData = LearningContent[];
@@ -54,4 +54,31 @@ export interface TextParams {
 export interface FlashcardParams {
   text: string;
   id: string
+}
+
+export interface DynamoDBFlashcard {
+  M: {
+    id: { S: string };
+    front: { S: string };
+    back: { S: string };
+  };
+}
+
+export interface DynamoDBTitle {
+  S: string;
+}
+
+export interface DynamoDBLearningContent {
+  id: { S: string };
+  title: {
+    M: {
+      english: DynamoDBTitle;
+      german: DynamoDBTitle;
+    };
+  };
+  text: { S: string };
+  type: { S: string };
+  size: { S: string };
+  difficulty: { S: string };
+  flashcards: { L: DynamoDBFlashcard[] };
 }

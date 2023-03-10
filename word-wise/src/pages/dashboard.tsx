@@ -39,7 +39,7 @@ const Dashboard: React.FC = () => {
     setCurrentFlashcardIndex(currentFlashcardIndex + 1);
   };
 
-  // const currentFlashcard = learningContent[0]?.flashcards[currentFlashcardIndex];
+  const currentFlashcard = learningContent[0]?.flashcards[currentFlashcardIndex];
 
   return (
     <Box sx={{ flexGrow: 1 }}>
