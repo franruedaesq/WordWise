@@ -7,35 +7,28 @@ import { addData } from '@/store/reducers/openAIReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/types/store';
 
-const Home: React.FC = () => {
-  
+export const getStaticProps = async () => {
+  const list: LearningContent[] = await getLearningContent('');
+  return {
+    props: { list },
+  };
+};
+
+const Home: React.FC<{ list: LearningContent[] }> = ({ list }) => {
   const dispatch = useDispatch();
   const contentList = useSelector((state: RootState) => state.openAIreducer);
   const [learningContentToShow, setLearningContentToShow] = useState(10);
   const [totalLearningContent, setTotalLearningContent] = useState(0);
-
-  const handleGetList = async () => {
-    getLearningContentList()
-  };
-
-  const getLearningContentList = async () => {
-    const list: LearningContent[] = await getLearningContent('story');
-    setTotalLearningContent(list.length)
-    dispatch(addData(list))
-  }
 
   const loadMoreObjects = () => {
     setLearningContentToShow(learningContentToShow + 10);
   };
 
   useEffect(() => {
-    console.log("are we here", contentList.length)
-    if (contentList.length == 0) {
-      console.log("what about here?")
-      getLearningContentList()
-    }
-  }, []);
-  
+    dispatch(addData(list));
+    setTotalLearningContent(list.length);
+  }, [list, dispatch]);
+
   useEffect(() => {
     window.addEventListener('scroll', () => {
       if (
@@ -52,15 +45,6 @@ const Home: React.FC = () => {
 
   return (
     <Box sx={{ flexGrow: 1, padding: "20px", paddingBottom: "150px" }}>
-      {/* <Button
-        variant="contained"
-        color="primary"
-        onClick={handleGetList}
-        size="small"
-        sx={{ maxWidth: '250px', marginTop: '20px' }}
-      >
-        Get List
-      </Button> */}
       {contentList.length > 0 &&
         contentList.slice(0, learningContentToShow).map((item) => (
           <CardComponent

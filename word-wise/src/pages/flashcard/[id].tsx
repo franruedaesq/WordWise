@@ -1,20 +1,21 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Box, Grid } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import Flashcard from '@/components/Flaschard';
 import { RootState } from '@/types/store';
+import { LearningContent } from '@/types';
+import { getLearningContent, getLearningContentItem } from '@/utils/dynamodb';
 
+interface Props {
+  learningContent: LearningContent;
+}
 
-const FlashcardPage: React.FC = () => {
+const FlashcardPage: React.FC<Props> = ({ learningContent }) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { id } = router.query;
-  const contentList = useSelector((state: RootState) => state.openAIreducer);
   const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState<number>(0);
-
-  const learningContent = contentList.find(item => item.id === id)
-  console.log(learningContent)
 
   const handleSuccess = () => {
     setCurrentFlashcardIndex(currentFlashcardIndex + 1);
@@ -50,19 +51,30 @@ const FlashcardPage: React.FC = () => {
   }
 };
 
+export async function getStaticPaths() {
+  // Fetch all the learning content items from DynamoDB
+  const learningContent = await getLearningContent('');
+
+  // Generate paths for all the learning content items
+  const paths = learningContent.map((item) => ({
+    params: { id: item.id },
+  }));
+
+  return {
+    paths,
+    fallback: true,
+  };
+}
+
+export async function getStaticProps({ params }: { params: { id: string } }) {
+  // Fetch the learning content item with the specified ID
+  const learningContent = await getLearningContentItem(params.id);
+
+  return {
+    props: {
+      learningContent,
+    },
+  };
+}
+
 export default FlashcardPage;
-
-
-// export async function getServerSideProps(context) {
-//     const { params } = context;
-//     const { id } = params;
-  
-//     // Aquí puedes utilizar el ID de la ruta para obtener los datos del post correspondiente
-//     // ...
-  
-//     return {
-//       props: {
-//         postData: /* los datos del post correspondiente */,
-//       },
-//     };
-//   }

@@ -216,7 +216,69 @@ const formatResponse = (response: any[]): LearningContent[] => {
 
 
 export async function getLearningContent(type?: string) {
-  const resp = await fetch(`/api/dynamo/content/list?type=${type || ''}`, {
+  const resp = await fetch(`${process.env.BASE_FETCH_URL}/api/dynamo/content/list?type=${type || ''}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+  const data: LearningContent[] = await resp.json();
+  return data;
+}
+
+// const formatItem = (item: DynamoDBLearningContent): LearningContent => {
+//   const formattedItem: LearningContent = {
+//     id: item.id.S,
+//     title: {
+//       english: item.title.M.english.S,
+//       german: item.title.M.german.S,
+//     },
+//     text: item.text.S,
+//     type: item.type.S,
+//     size: item.size.S,
+//     difficulty: item.difficulty.S,
+//     flashcards: item.flashcards?.L.map((flashcard) => ({
+//       id: flashcard.M.id.S,
+//       front: flashcard.M.front.S,
+//       back: flashcard.M.back.S,
+//     })),
+//   };
+//   return formattedItem;
+// };
+
+export const getLearningContentItemFromDynamoDB = async (
+  accessKeyId: string,
+  secretAccessKey: string,
+  tableName: string,
+  id: string
+): Promise<LearningContent | null> => {
+  const client = new DynamoDBClient({
+    region: "us-east-1", // Change this to the region of your DynamoDB table
+    credentials: {
+      accessKeyId,
+      secretAccessKey,
+    },
+  });
+
+  const params = {
+    TableName: tableName,
+    Key: {
+      id: { S: id },
+    },
+  };
+
+  const command = new GetItemCommand(params);
+  const response = await client.send(command);
+
+  if (!response.Item) {
+    return null;
+  }
+
+  return formatResponse([response.Item])[0];
+};
+
+export async function getLearningContentItem(id: string) {
+  const resp = await fetch(`${process.env.BASE_FETCH_URL}/api/dynamo/content/getItem?id=${id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
@@ -225,23 +287,3 @@ export async function getLearningContent(type?: string) {
   const data = await resp.json();
   return data;
 }
-
-const formatItem = (item: DynamoDBLearningContent): LearningContent => {
-  const formattedItem: LearningContent = {
-    id: item.id.S,
-    title: {
-      english: item.title.M.english.S,
-      german: item.title.M.german.S,
-    },
-    text: item.text.S,
-    type: item.type.S,
-    size: item.size.S,
-    difficulty: item.difficulty.S,
-    flashcards: item.flashcards?.L.map((flashcard) => ({
-      id: flashcard.M.id.S,
-      front: flashcard.M.front.S,
-      back: flashcard.M.back.S,
-    })),
-  };
-  return formattedItem;
-};
