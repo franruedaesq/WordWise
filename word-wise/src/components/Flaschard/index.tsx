@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import ReactCardFlip from 'react-card-flip';
 import { Button, Typography, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
+import { useSwiper } from "swiper/react";
 
 interface FlashcardProps {
   frontText: string;
   backText: string;
-  onSuccess: () => void;
-  onError: () => void;
+  onSuccess: (index: number) => void;
+  onError: (index: number) => void;
+  index: number;
 }
 
 const FlashcardContainer = styled('div')({
@@ -18,8 +20,9 @@ const FlashcardContainer = styled('div')({
   margin: '5px'
 });
 
-const Flashcard = ({ frontText, backText, onSuccess: onCorrectClick, onError: onIncorrectClick }: FlashcardProps) => {
+const Flashcard = ({ frontText, backText, onSuccess: onCorrectClick, onError: onIncorrectClick, index }: FlashcardProps) => {
   const theme = useTheme(); // use the useTheme hook to access the current theme object
+  const swiper = useSwiper()
 
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
     // Only render the component on the client-side
@@ -29,15 +32,17 @@ const Flashcard = ({ frontText, backText, onSuccess: onCorrectClick, onError: on
   const handleClick = () => {
     setIsFlipped(!isFlipped);
   };
-
+  
   const handleCorrectClick = () => {
+    swiper.slideNext()
     setIsFlipped(false);
-    onCorrectClick();
+    onCorrectClick(index);
   };
-
+  
   const handleIncorrectClick = () => {
+    swiper.slideNext()
     setIsFlipped(false);
-    onIncorrectClick();
+    onIncorrectClick(index);
   };
 
   if (!rendered) {
@@ -46,7 +51,7 @@ const Flashcard = ({ frontText, backText, onSuccess: onCorrectClick, onError: on
 
   return (
     <FlashcardContainer onClick={handleClick} >
-      <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal" containerStyle={{ width: "250px", height: "400px", margin: "10px", borderRadius: "10px", background: theme.palette.background.paper, color: theme.palette.text.primary }}>
+      <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal" containerStyle={{ width: "300px", height: "450px", margin: "10px", borderRadius: "10px", background: theme.palette.background.paper, color: theme.palette.text.primary }}>
         <div style={{ height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Typography variant="h6">{frontText}</Typography>
         </div>
