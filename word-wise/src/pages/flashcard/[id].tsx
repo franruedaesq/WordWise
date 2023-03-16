@@ -65,16 +65,25 @@ export async function getStaticPaths() {
     fallback: true,
   };
 }
-
 export async function getStaticProps({ params }: { params: { id: string } }) {
-  // Fetch the learning content item with the specified ID
-  const learningContent = await getLearningContentItem(params.id);
+  try {
+    // Fetch the learning content item with the specified ID
+    const learningContent = await getLearningContentItem(params.id);
 
-  return {
-    props: {
-      learningContent,
-    },
-  };
+    return {
+      props: {
+        learningContent,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching learning content:", error);
+    return {
+      props: {
+        learningContent: null,
+      },
+    };
+  }
 }
+
 
 export default FlashcardPage;

@@ -8,11 +8,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/types/store';
 
 export const getStaticProps = async () => {
-  const list: LearningContent[] = await getLearningContent('');
-  return {
-    props: { list },
-  };
+  try {
+    const list: LearningContent[] = await getLearningContent('');
+    return {
+      props: { list },
+    };
+  } catch (error) {
+    console.error("Error fetching learning content list:", error);
+    return {
+      props: { list: [] },
+    };
+  }
 };
+
 
 const Home: React.FC<{ list: LearningContent[] }> = ({ list }) => {
   const dispatch = useDispatch();
