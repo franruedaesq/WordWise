@@ -1,9 +1,6 @@
-import { getAllItemsFromDynamoDB } from '@/utils/dynamodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-const accessKeyId = process.env.DYNAMODB_ACCESS_KEY || '';
-const secretAccessKey = process.env.DYNAMODB_SECRET_KEY || '';
-const tableName = 'word-wise-content'; // Change this to your DynamoDB table name
+const apiUrl = process.env.API_GET_ALL_CONTENT;
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,8 +8,12 @@ export default async function handler(
 ) {
   if (req.method === 'GET') {
     try {
-      const type = req.query.type as string; // Read the 'type' parameter from the query string
-      const items = await getAllItemsFromDynamoDB(accessKeyId, secretAccessKey, tableName, type);
+      // const type = req.query.type as string; // Read the 'type' parameter from the query string
+      const response = await fetch(`${apiUrl}`);
+      if (!response.ok) {
+        throw new Error('Error retrieving content');
+      }
+      const items = await response.json();
       console.log(items)
       res.status(200).json(items);
     } catch (error) {
