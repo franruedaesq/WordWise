@@ -1,9 +1,6 @@
-import { getLearningContentItemFromDynamoDB } from '@/utils/dynamodb';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-const accessKeyId = process.env.DYNAMODB_ACCESS_KEY || '';
-const secretAccessKey = process.env.DYNAMODB_SECRET_KEY || '';
-const tableName = 'word-wise-content'; // Change this to your DynamoDB table name
+const apiUrl = process.env.API_GET_CONTENT_BY_ID;
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,12 +9,12 @@ export default async function handler(
   if (req.method === 'GET') {
     try {
       const id = req.query.id as string; // Read the 'id' parameter from the query string
-      const item = await getLearningContentItemFromDynamoDB(accessKeyId, secretAccessKey, tableName, id);
-      if (item) {
-        res.status(200).json(item);
-      } else {
-        res.status(404).json({ message: `Item with ID ${id} not found` });
+      const response = await fetch(`${apiUrl}/${id}`);
+      if (!response.ok) {
+        throw new Error(`Item with ID ${id} not found`);
       }
+      const item = await response.json();
+      res.status(200).json(item);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Error retrieving content' });

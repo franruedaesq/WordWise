@@ -1,9 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { addLearningContentToDynamoDB } from '@/utils/dynamodb';
 import { IContentItem } from '@/utils/item';
 
-const accessKeyId = process.env.DYNAMODB_ACCESS_KEY || '';
-const secretAccessKey = process.env.DYNAMODB_SECRET_KEY || '';
+const apiUrl = process.env.API_ADD_CONTENT;
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,7 +10,14 @@ export default async function handler(
   if (req.method === 'POST') {
     try {
       const item: IContentItem = req.body;
-      await addLearningContentToDynamoDB(accessKeyId, secretAccessKey, item);
+      const response = await fetch(`${apiUrl}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item),
+      });
+      if (!response.ok) {
+        throw new Error('Error saving content');
+      }
       res.status(200).json({ message: 'Content saved successfully' });
     } catch (error) {
       console.error(error);
