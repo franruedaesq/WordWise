@@ -132,7 +132,7 @@ export async function saveLearningContent(content: LearningContent) {
 
 export async function getLearningContent(type?: string) {
   try {
-    const resp = await fetch(`${process.env.API_GET_ALL_CONTENT}`, {
+    const resp = await fetch(`${process.env.BASE_FETCH_URL}/api/dynamo/content/list`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -141,15 +141,16 @@ export async function getLearningContent(type?: string) {
     const data: LearningContent[] = await resp.json();
     return data;
   } catch (error) {
-    console.error("Error fetching learning content:", error);
+    console.error("Error fetching learning content list:", error);
     return [];
   }
 }
 
 
+
 export async function getLearningContentItem(id: string) {
   try {
-    const resp = await fetch(`${process.env.API_GET_CONTENT_BY_ID}/${id}`, {
+    const resp = await fetch(`${process.env.BASE_FETCH_URL}/api/dynamo/content/getItem?id=${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -162,4 +163,5 @@ export async function getLearningContentItem(id: string) {
     return null;
   }
 }
+
 
