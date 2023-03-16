@@ -131,7 +131,7 @@ export async function saveLearningContent(content: LearningContent) {
 }
 
 export async function getLearningContent(type?: string) {
-  const resp = await fetch(`${process.env.BASE_FETCH_URL}/api/dynamo/content/list?type=${type || ''}`, {
+  const resp = await fetch(`${process.env.BASE_FETCH_URL}/api/dynamo/content/list`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
