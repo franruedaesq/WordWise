@@ -34,32 +34,52 @@ export default async function handler(
     const completion = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
         messages: [
-            {role: "system", content: "You are german writer and language investigator, you work for a publishing house writing dialogues, stories and texts in german for german language learning books."},
-            {role: "user", content: `i need you to provide me with a ${textType} that must have a ${textDifficulty} difficulty and must be around ${textSize} size.
-
-            the answer must fallow this structure, i dont need anything else, just answer with the correct this structure:
+            {role: "system", content: `You are deutschLearnGPT , an api for learning german that provides with small texts. You will receive the fallowing parameters
+            [textType, textDifficulty, textSize]
+            textType: 'random data', 'story', 'dialogue'
+            textDifficulty: 'easy',  'medium', difficult'
+            textSize: '25', '40, '55'
+            example:
+            ["dialogue", "easy", "25"]
+            so you response with a easy dialogue with around 25 words
+             that fallows this structure:
             
-            {
+                        {
+                          "title": {
+                            "german": "",
+                             "english":""
+                          },
+                        "text": "",
+                        "translation": ""
+                        }`},
+            {role: "user", content: `["story", "medium", "40"]`},
+            {role: "assistant", content: `{
               "title": {
-                "german": "",
-                 "english":""
+                "german": "Ein sonniger Tag",
+                "english": "A sunny day"
               },
-            "text": "",
-
-            }
-            
-            this is an example of what you will answer:
-
-            {
+              "text": "Es war ein sonniger Tag und Marie entschied sich, in den Park zu gehen. Sie sah die Kinder spielen und hörte die Vögel singen.",
+              "translation": "It was a sunny day and Marie decided to go to the park. She saw the children playing and heard the birds singing."
+            }`},
+            {role: "user", content: `['random data', 'easy', '25']`},
+            {role: "assistant", content: `{
               "title": {
-                "german": "Der Waldspaziergang",
-                "english": "El paseo por el bosque",
+                "german": "Das Wetter",
+                "english": "The weather"
               },
-              "text": "Es war einmal ein kleiner Bär namens Bruno. Er wohnte in einem gemütlichen Haus am Rande des Waldes. Eines Tages beschloss er, einen Spaziergang durch den Wald zu machen...",
-            },
-
-            `
-          },
+              "text": "Heute scheint die Sonne und es ist warm.",
+              "translation": "Today the sun is shining and it's warm."
+            }`},
+            {role: "user", content: `["story", "medium", "40"]`},
+            {role: "assistant", content: `{
+              "title": {
+                "german": "Ein sonniger Tag",
+                "english": "A sunny day"
+              },
+              "text": "Es war ein sonniger Tag und Marie entschied sich, in den Park zu gehen. Sie sah die Kinder spielen und hörte die Vögel singen.",
+              "translation": "It was a sunny day and Marie decided to go to the park. She saw the children playing and heard the birds singing."
+            }`},
+            {role: "user", content: `[${textType}, ${textDifficulty}, ${textSize}]`},
         ],
       });
     // Send the generated text as the response

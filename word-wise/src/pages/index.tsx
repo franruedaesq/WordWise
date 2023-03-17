@@ -54,15 +54,18 @@ const Home: React.FC<{ list: LearningContent[] }> = ({ list }) => {
   return (
     <Box sx={{ flexGrow: 1, padding: "20px", paddingBottom: "150px" }}>
       {contentList.length > 0 &&
-        contentList.slice(0, learningContentToShow).map((item) => (
+        contentList.slice(0, learningContentToShow).map((item) => {
+          if (!item.id) return null
+          return (
           <CardComponent
             key={item.id}
             englishTitle={item.title.english}
             germanTitle={item.title.german}
             text={item.text}
             flashcardID={item.id}
+            grammar={item?.grammar || ""}
           />
-        ))}
+        )})}
     </Box>
   );
 };

@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { IContentItem } from '@/utils/item';
 
 const apiUrl = process.env.API_ADD_CONTENT;
 
@@ -9,7 +8,7 @@ export default async function handler(
 ) {
   if (req.method === 'POST') {
     try {
-      const item: IContentItem = req.body;
+      const item = req.body;
       const response = await fetch(`${apiUrl}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
