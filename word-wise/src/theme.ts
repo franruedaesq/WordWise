@@ -55,7 +55,7 @@ export const darkTheme = createTheme({
       main: '#2196f3',
     },
     secondary: {
-      main: '#f50057',
+      main: '#ffffff',
     },
     background: {
       default: '#121212',
