@@ -72,6 +72,8 @@ const FlashcardPage: React.FC<Props> = ({ learningContent }) => {
 
         </Grid>
         <Grid maxWidth="350px" paddingTop="50px">
+        <Typography variant="h6" textAlign="center">{learningContent.title.german}</Typography>
+            <Typography variant="h6" textAlign="center" pb={1}>{learningContent.title.english}</Typography>
           <Accordion>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
