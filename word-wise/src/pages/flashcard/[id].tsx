@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Grid } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import Flashcard from '@/components/Flaschard';
@@ -8,7 +8,8 @@ import { getLearningContent, getLearningContentItem } from '@/utils/dynamodb';
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/effect-cards";
-import { EffectCards } from "swiper";
+import { EffectCreative } from "swiper";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 
 interface Props {
@@ -25,21 +26,39 @@ const FlashcardPage: React.FC<Props> = ({ learningContent }) => {
     console.log(index)
     // setCurrentFlashcardIndex(currentFlashcardIndex + 1)
   };
-  
+
   const handleError = (index: number) => {
     console.log(index)
     // setCurrentFlashcardIndex(currentFlashcardIndex + 1)
   };
-  
+
+  const handleButtonClick = () => {
+
+  }
 
   if (learningContent) {
     return (
-      <Box sx={{ display:"flex", flexGrow: 1, justifyContent: "center", padding: "20px", paddingBottom: "150px" }}>
-        <Grid container spacing={2} display="flex" justifyContent="center" paddingLeft="70px" maxWidth={"400px"}>
-          <Swiper effect={"cards"} grabCursor={true} modules={[EffectCards]} loop={true} style={{
-            width: "100%",
-            height: "100%",
-          }}
+      <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1, alignItems: "center", padding: "20px", paddingBottom: "150px" }}>
+        <Grid container spacing={2} display="flex" justifyContent="center" paddingLeft={"20px"} maxWidth={"350px"}>
+          <Swiper
+            effect={"creative"}
+            grabCursor={true}
+            creativeEffect={{
+              prev: {
+                shadow: true,
+                translate: ["-120%", 0, -500],
+              },
+              next: {
+                shadow: true,
+                translate: ["120%", 0, -500],
+              },
+            }}
+            modules={[EffectCreative]}
+            loop={true}
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
 
           >
             {learningContent.flashcards.map((flashcard, index) => (
@@ -54,7 +73,38 @@ const FlashcardPage: React.FC<Props> = ({ learningContent }) => {
               </SwiperSlide>
             ))}
           </Swiper>
+
         </Grid>
+          <Grid maxWidth="350px" paddingTop="50px">
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography>Show text</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography>
+                {learningContent.text}
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography>Grammar and Syntax Explanation</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography>
+                We are working on it
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+          </Grid>
       </Box>
     );
   } else {
