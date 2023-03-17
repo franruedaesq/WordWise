@@ -59,7 +59,7 @@ const FlashcardPage: React.FC<Props> = ({ learningContent }) => {
               width: "100%",
               height: "100%",
             }}
-
+            cssMode={true}
           >
             {learningContent.flashcards.map((flashcard, index) => (
               <SwiperSlide key={index}>

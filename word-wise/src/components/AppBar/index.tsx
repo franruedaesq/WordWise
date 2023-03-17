@@ -11,7 +11,7 @@ interface AppBarProps {
 export const AppHeader = ({ title }: AppBarProps) => {
     const router = useRouter();
     return (
-        <AppBar position="static" style={{ height: "60px", display: "flex", justifyContent: "center", padding: "0 20px", position: "fixed", zIndex: 1 }}>
+        <AppBar position="static" style={{ height: "60px", display: "flex", justifyContent: "center", padding: "0 20px", position: "fixed", zIndex: 2 }}>
             <Toolbar>
                 <Button color='secondary' onClick={() => router.push('/')} style={{ textTransform: 'none' }}>
                     <Typography variant="h5">{title}</Typography>
