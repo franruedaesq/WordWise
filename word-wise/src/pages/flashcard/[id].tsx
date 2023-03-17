@@ -8,7 +8,9 @@ import { getLearningContent, getLearningContentItem } from '@/utils/dynamodb';
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/effect-cards";
-import { EffectCreative } from "swiper";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Pagination, Navigation } from "swiper";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 
@@ -41,25 +43,19 @@ const FlashcardPage: React.FC<Props> = ({ learningContent }) => {
       <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1, alignItems: "center", padding: "20px", paddingBottom: "150px" }}>
         <Grid container spacing={2} display="flex" justifyContent="center" paddingLeft={"20px"} maxWidth={"350px"}>
           <Swiper
-            effect={"creative"}
-            grabCursor={true}
-            creativeEffect={{
-              prev: {
-                shadow: true,
-                translate: ["-120%", 0, -500],
-              },
-              next: {
-                shadow: true,
-                translate: ["120%", 0, -500],
-              },
-            }}
-            modules={[EffectCreative]}
+            slidesPerView={1}
+            spaceBetween={30}
             loop={true}
+            // pagination={{
+            //   clickable: true,
+            // }}
+            // navigation={true}
+            modules={[ Navigation]}
             style={{
               width: "100%",
               height: "100%",
             }}
-
+            cssMode={true}
           >
             {learningContent.flashcards.map((flashcard, index) => (
               <SwiperSlide key={index}>
@@ -75,7 +71,7 @@ const FlashcardPage: React.FC<Props> = ({ learningContent }) => {
           </Swiper>
 
         </Grid>
-          <Grid maxWidth="350px" paddingTop="50px">
+        <Grid maxWidth="350px" paddingTop="50px">
           <Accordion>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
@@ -104,7 +100,7 @@ const FlashcardPage: React.FC<Props> = ({ learningContent }) => {
               </Typography>
             </AccordionDetails>
           </Accordion>
-          </Grid>
+        </Grid>
       </Box>
     );
   } else {
