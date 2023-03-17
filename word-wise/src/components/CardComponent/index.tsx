@@ -7,6 +7,7 @@ interface CardProps {
   germanTitle: string;
   text: string;
   flashcardID: string;
+  grammar: string;
 }
 
 const StyledCardContent = styled(CardContent)({
@@ -20,6 +21,7 @@ const CardComponent: React.FC<CardProps> = ({
   germanTitle,
   text,
   flashcardID,
+  grammar,
 }) => {
   const router = useRouter();
   const handleButtonClick = () => {
@@ -27,7 +29,8 @@ const CardComponent: React.FC<CardProps> = ({
     router.push(`/flashcard/${id}`);
   };
   return (
-    <div style={{ maxWidth: "1000px", margin: "10px auto", borderRadius: "10px", }}>
+    <div style={{ maxWidth: "1000px", margin: "10px auto", borderRadius: "10px", position: "relative"}}>
+      {grammar?.length > 0 ? <h5 style={{ position: "absolute", top: "10px", right: "10px", margin: 0 }} >G</h5> : null}
       <Card>
         <StyledCardContent>
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', flexWrap: 'wrap' }}>

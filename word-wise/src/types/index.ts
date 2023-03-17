@@ -13,10 +13,12 @@ export interface Flashcard {
     id: string;
     title: Title;
     text: string;
+    translation?: string;
     type: string;
     size: string;
     difficulty: string;
     flashcards: Flashcard[];
+    grammar: string;
   }
   
 export type FakeData = LearningContent[];
@@ -29,6 +31,7 @@ export interface Generatedtitle {
 export interface TextObj {
   title: Generatedtitle;
   text: string;
+  translation?: string;
 }
 
 export interface FlashCardObject {

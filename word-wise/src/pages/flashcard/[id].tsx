@@ -35,7 +35,6 @@ const FlashcardPage: React.FC<Props> = ({ learningContent }) => {
   };
 
   const handleButtonClick = () => {
-
   }
 
   if (learningContent) {
@@ -97,8 +96,8 @@ const FlashcardPage: React.FC<Props> = ({ learningContent }) => {
               <Typography>Grammar and Syntax Explanation</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Typography>
-                We are working on it
+              <Typography whiteSpace="pre-line" >
+                {learningContent.grammar ? learningContent.grammar : "We are working on it" }
               </Typography>
             </AccordionDetails>
           </Accordion>

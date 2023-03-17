@@ -34,7 +34,7 @@ export default async function handler(
     const completion = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
         messages: [
-            {role: "system", content: `Act as you were an endpoint for german-english translation API, as an endpoint you get a text in german and then response with an array containing all of the words from the text translated to english. The list must include all the words used in the text and should not contain any repetitions. The structure of your response are as fallowed:
+            {role: "system", content: `You are deutschTranslateGPT a german-english translation API, as an endpoint you get a text in german and then response with an array containing all of the words from the text translated to english. The list must include all the words used in the text and should not contain any repetitions. The structure of your response are as fallowed:
             {
             "flashcards": [
             {
@@ -50,9 +50,166 @@ export default async function handler(
             ...
             ]
             }
-             you answer only with that structure and nothing else since you are an API endpoint
-            as an endpoint if you don't get any Parameters then you response with an empty object: {}`},
-            {role: "user", content: text },
+you must fallow this rules
+- only answer with an object
+- no word repetition
+- no includes persons Names`},
+            {role: "user", content: 'Ich lade dich zum Essen ein, kommst du morgen?.' },
+            {role: "assistant", content: `{
+              "flashcards": [
+              {
+              "id": "1",
+              "front": "Ich",
+              "back": "I"
+              },
+              {
+              "id": "2",
+              "front": "lade",
+              "back": "invite"
+              },
+              {
+              "id": "3",
+              "front": "dich",
+              "back": "you"
+              },
+              {
+              "id": "4",
+              "front": "zum",
+              "back": "to the"
+              },
+              {
+              "id": "5",
+              "front": "Essen",
+              "back": "meal"
+              },
+              {
+              "id": "6",
+              "front": "ein",
+              "back": "in"
+              },
+              {
+              "id": "7",
+              "front": "kommst",
+              "back": "come"
+              },
+              {
+              "id": "8",
+              "front": "du",
+              "back": "you"
+              },
+              {
+              "id": "9",
+              "front": "morgen",
+              "back": "tomorrow"
+              }
+              ]
+              }` },
+              {role: "user", content: 'Guten Morgen Julian! Wie geht es dir?' },
+              {role: "assistant", content: `{
+                "flashcards": [
+                {
+                "id": "1",
+                "front": "Guten",
+                "back": "Good"
+                },
+                {
+                "id": "2",
+                "front": "Morgen!",
+                "back": "morning!"
+                },
+                {
+                "id": "3",
+                "front": "Wie",
+                "back": "How"
+                },
+                {
+                "id": "4",
+                "front": "geht",
+                "back": "are"
+                },
+                {
+                "id": "5",
+                "front": "es",
+                "back": "you"
+                },
+                {
+                "id": "6",
+                "front": "dir?",
+                "back": "doing?"
+                }
+                ]
+                }` },
+                {role: "user", content: 'Anna besucht ihre Oma einmal pro Woche. Sie trinken Tee und essen Kuchen zusammen.' },
+                {role: "assistant", content: `{
+                  "flashcards": [
+                  {
+                  "id": "1",
+                  "front": "besucht",
+                  "back": "visits"
+                  },
+                  {
+                  "id": "2",
+                  "front": "ihre",
+                  "back": "her"
+                  },
+                  {
+                  "id": "3",
+                  "front": "Oma",
+                  "back": "grandmother"
+                  },
+                  {
+                  "id": "4",
+                  "front": "einmal",
+                  "back": "once"
+                  },
+                  {
+                  "id": "5",
+                  "front": "pro",
+                  "back": "per"
+                  },
+                  {
+                  "id": "6",
+                  "front": "Woche.",
+                  "back": "week."
+                  },
+                  {
+                  "id": "7",
+                  "front": "Sie",
+                  "back": "They"
+                  },
+                  {
+                  "id": "8",
+                  "front": "trinken",
+                  "back": "drink"
+                  },
+                  {
+                  "id": "9",
+                  "front": "Tee",
+                  "back": "tea"
+                  },
+                  {
+                  "id": "10",
+                  "front": "und",
+                  "back": "and"
+                  },
+                  {
+                  "id": "11",
+                  "front": "essen",
+                  "back": "eat"
+                  },
+                  {
+                  "id": "12",
+                  "front": "Kuchen",
+                  "back": "cake"
+                  },
+                  {
+                  "id": "13",
+                  "front": "zusammen.",
+                  "back": "together."
+                  }
+                  ]
+                  }` },
+                  {role: "user", content: text },
         ],
       });
     // Send the generated text as the response

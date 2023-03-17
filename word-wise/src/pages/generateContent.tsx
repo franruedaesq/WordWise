@@ -16,10 +16,11 @@ import { RootState } from '@/types/store';
 import { setData, setFlashcards } from '@/store/reducers/openAIReducer';
 import { v4 as uuidv4 } from 'uuid';
 import { fetchText } from '@/utils/openAI';
-import { fetchFlashcards } from '../utils/openAI';
+import { fetchFlashcards, fetchAnalysis } from '../utils/openAI';
 import LoaderComponent from '@/components/Loader';
 import { setLoading } from '@/store/reducers/loader';
 import { saveLearningContent } from '@/utils/dynamodb';
+import { useRouter } from 'next/router';
 
 interface FlashcardResp {
   content: string;
@@ -28,11 +29,12 @@ interface FlashcardResp {
 
 const GenerateContent: React.FC = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   // const data = useSelector((state: RootState) => state.openAIreducer);
   const isLoading = useSelector((state: RootState) => state.loading.isLoading);
 
   const [selectedType, setSelectedType] = useState<string>('dialogue');
-  const [selectedSize, setSelectedSize] = useState<string>('25 words');
+  const [selectedSize, setSelectedSize] = useState<string>('25');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('easy');
   const [generatedText, setGeneratedText] = useState<string>('');
   const [generatedTitle, setGeneratedTitle] = useState<Generatedtitle>({
@@ -43,6 +45,7 @@ const GenerateContent: React.FC = () => {
   const [newText, setNewText] = useState<string>("{}");
   const [newTextId, setNewTextId] = useState<string>("");
   const [flashcardsarray, setFlashcardsArray] = useState<Flashcard[]>([])
+  const [grammar, setGrammar] = useState<string>("")
 
 
 
@@ -62,14 +65,16 @@ const GenerateContent: React.FC = () => {
 
   const handleGetFlashcards = async () => {
     dispatch(setLoading(true));
-    const respFlashcards = await fetchFlashcards(generatedText, newTextId)
-    .then((resp) => {
-      dispatch(setLoading(false));
-      return resp
-    })
     try {
-      const flashcardContent: {flashcards:Flashcard[]} = JSON.parse(respFlashcards.content);
-      setFlashcardsArray(flashcardContent.flashcards)
+      const [respFlashcards, respAnalysis] = await Promise.all([
+        fetchFlashcards(generatedText, newTextId),
+        fetchAnalysis(generatedText, newTextId)
+      ]);
+      dispatch(setLoading(false));
+  
+      const flashcardContent: { flashcards: Flashcard[] } = JSON.parse(respFlashcards.content);
+      setFlashcardsArray(flashcardContent.flashcards);
+      setGrammar(respAnalysis.analysis)
       dispatch(setFlashcards({ 
         id: newTextId, 
         flashcards: flashcardContent.flashcards, 
@@ -77,13 +82,14 @@ const GenerateContent: React.FC = () => {
         text: generatedText, 
         type: selectedType, 
         size: selectedSize, 
-        difficulty: selectedDifficulty }))
-      
+        difficulty: selectedDifficulty,
+        grammar: respAnalysis.analysis
+      }));
     } catch (error) {
       console.log(error);
       handleGetFlashcards();
     }
-  }
+  };
 
   const handleTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedType((event.target as HTMLInputElement).value);
@@ -106,13 +112,20 @@ const GenerateContent: React.FC = () => {
         text: generatedText, 
         type: selectedType, 
         size: selectedSize, 
-        difficulty: selectedDifficulty })
+        difficulty: selectedDifficulty,
+        grammar: grammar
+      })
     }
   }
 
   useEffect(() => {
-    saveContentInDatabase()
-  }, [flashcardsarray])
+    if(flashcardsarray.length > 0 && grammar.length > 0) {
+      saveContentInDatabase()
+      setFlashcardsArray([])
+      setGrammar("")
+
+    }
+  }, [flashcardsarray, grammar])
 
 
 
@@ -123,7 +136,7 @@ const GenerateContent: React.FC = () => {
         if (Object.keys(textContent).length !== 0) { // check if textContent is not an empty object
           const textId = uuidv4();
           setNewTextId(textId)
-          dispatch(setData({ id: textId, ...textContent, type: selectedType, size: selectedSize, difficulty: selectedDifficulty, flashcards: [] }));
+          dispatch(setData({ id: textId, ...textContent, type: selectedType, size: selectedSize, difficulty: selectedDifficulty, flashcards: [], grammar: "" }));
           setGeneratedText(textContent.text);
           setGeneratedTitle(textContent.title);
         }
@@ -163,9 +176,9 @@ const GenerateContent: React.FC = () => {
               value={selectedSize}
               onChange={handleSizeChange}
             >
-              <FormControlLabel value="25 words" control={<Radio />} label="Short" />
-              <FormControlLabel value="40 words" control={<Radio />} label="Medium" />
-              <FormControlLabel value="55 words" control={<Radio />} label="Large" />
+              <FormControlLabel value="25" control={<Radio />} label="Short" />
+              <FormControlLabel value="40" control={<Radio />} label="Medium" />
+              <FormControlLabel value="55" control={<Radio />} label="Large" />
             </RadioGroup>
           </FormControl>
           <FormControl component="fieldset">
