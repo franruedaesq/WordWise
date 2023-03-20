@@ -50,17 +50,26 @@ const GenerateContent: React.FC = () => {
 
 
   const handleGenerate = async () => {
-    setGeneratedText("")
+    setGeneratedText("");
     setGeneratedTitle({
       german: "",
       english: "",
-    })
+    });
     dispatch(setLoading(true));
-    const respText = await fetchText(selectedType, selectedSize, selectedDifficulty)
-    .then((resp) => {
-      setNewText(resp)
-      dispatch(setLoading(false))
-    })
+    try {
+      const respText = await fetchText(selectedType, selectedSize, selectedDifficulty);
+      setNewText(respText);
+      dispatch(setLoading(false));
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("504")) {
+        
+        console.log("Error 504: Gateway Timeout");
+      } else {
+        // Manejar otros errores
+        console.error(error);
+      }
+      dispatch(setLoading(false));
+    }
   };
 
   const handleGetFlashcards = async () => {
