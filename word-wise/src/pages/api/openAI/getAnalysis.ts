@@ -13,7 +13,7 @@ interface RequestBody {
 }
 
 interface ResponseData {
-  response: ChatCompletionResponseMessage | undefined;
+  response: ChatCompletionResponseMessage | undefined | string;
   id: string;
 }
 
@@ -21,6 +21,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
+  try {
   // Make sure the request method is POST
   if (req.method !== 'POST') {
     res.status(405);
@@ -76,4 +77,12 @@ export default async function handler(
     console.error(err);
     res.status(500);
   }
+} catch (err: any) {
+  if (err.response && err.response.status === 504) {
+    res.status(504).json({ response: "Gateway Timeout", id: req.body.id});
+  } else {
+    console.error(err);
+    res.status(500).json({ response: "Internal Server Error", id: req.body.id});
+  }
+}
 }
