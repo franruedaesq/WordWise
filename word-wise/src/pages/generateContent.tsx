@@ -41,15 +41,29 @@ const GenerateContent: React.FC = () => {
     german: "",
     english: "",
   });
-  const prevNewText = useRef('');
-  const [newText, setNewText] = useState<string>("{}");
+  const prevTextContent = useRef<TextObj>({
+    text: "",
+    title: {
+      german: "",
+      english: "",
+    },
+    translation: "",
+  });
+  const [textContent, setTextContent] = useState<TextObj>({
+    text: "",
+    title: {
+      german: "",
+      english: "",
+    },
+    translation: "",
+  });
   const [newTextId, setNewTextId] = useState<string>("");
   const [flashcardsarray, setFlashcardsArray] = useState<Flashcard[]>([])
   const [grammar, setGrammar] = useState<string>("")
 
 
 
-  const handleGenerate = async () => {
+  const handleGenerateText = async () => {
     setGeneratedText("");
     setGeneratedTitle({
       german: "",
@@ -58,7 +72,7 @@ const GenerateContent: React.FC = () => {
     dispatch(setLoading(true));
     try {
       const respText = await fetchText(selectedType, selectedSize, selectedDifficulty);
-      setNewText(respText);
+      setTextContent(respText);
       dispatch(setLoading(false));
     } catch (error) {
       if (error instanceof Error && error.message.includes("504")) {
@@ -80,13 +94,12 @@ const GenerateContent: React.FC = () => {
         fetchAnalysis(generatedText, newTextId)
       ]);
       dispatch(setLoading(false));
-  
-      const flashcardContent: { flashcards: Flashcard[] } = JSON.parse(respFlashcards.content);
-      setFlashcardsArray(flashcardContent.flashcards);
+      const flashcardContent: {id: string, content: Flashcard[]}= respFlashcards;
+      setFlashcardsArray(flashcardContent.content);
       setGrammar(respAnalysis.analysis)
       dispatch(setFlashcards({ 
         id: newTextId, 
-        flashcards: flashcardContent.flashcards, 
+        flashcards: flashcardContent.content, 
         title: generatedTitle, 
         text: generatedText, 
         type: selectedType, 
@@ -96,7 +109,7 @@ const GenerateContent: React.FC = () => {
       }));
     } catch (error) {
       console.log(error);
-      handleGetFlashcards();
+      // handleGetFlashcards();
     }
   };
 
@@ -139,9 +152,8 @@ const GenerateContent: React.FC = () => {
 
 
   useEffect(() => {
-    if (newText && newText !== prevNewText.current) {
+    if (textContent.text && textContent !== prevTextContent.current) {
       try {
-        const textContent: TextObj = JSON.parse(newText);
         if (Object.keys(textContent).length !== 0) { // check if textContent is not an empty object
           const textId = uuidv4();
           setNewTextId(textId)
@@ -151,11 +163,11 @@ const GenerateContent: React.FC = () => {
         }
       } catch (error) {
         console.log(error);
-        handleGenerate();
+        // handleGenerateText();
       }
-      prevNewText.current = newText;
+      prevTextContent.current = textContent;
     }
-  }, [newText]);
+  }, [textContent]);
 
   return (
     <div>
@@ -204,7 +216,7 @@ const GenerateContent: React.FC = () => {
             </RadioGroup>
           </FormControl>
         </Box>
-        <Button variant="contained" color="primary" onClick={handleGenerate} size="small" sx={{ maxWidth: "250px" }}>
+        <Button variant="contained" color="primary" onClick={handleGenerateText} size="small" sx={{ maxWidth: "250px" }}>
           Generate
         </Button>
       </Box>
