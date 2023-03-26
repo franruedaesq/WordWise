@@ -1,28 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Typography } from '@mui/material';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import Flashcard from '@/components/Flaschard';
-import { LearningContent } from '@/types';
-import { getLearningContent, getLearningContentItem } from '@/utils/dynamodb';
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/effect-cards";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { Pagination, Navigation } from "swiper";
+import { Navigation } from "swiper";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { LearningContentState } from '@/types/store';
+import { selectLearningContentById } from '@/store/selectors/openAI';
 
 
-interface Props {
-  learningContent: LearningContent;
-}
+// interface Props {
+//   learningContent: LearningContent;
+// }
 
-const FlashcardPage: React.FC<Props> = ({ learningContent }) => {
+const FlashcardPage: React.FC = () => {
 
   const dispatch = useDispatch();
   const router = useRouter();
   const { id } = router.query;
+
+  const learningContent = useSelector((state) => selectLearningContentById(state, id as string));
+
   const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState<number>(0);
   const handleSuccess = (index: number) => {
     console.log(index)
@@ -116,39 +119,39 @@ const FlashcardPage: React.FC<Props> = ({ learningContent }) => {
 };
 
 
-export async function getStaticPaths() {
-  // Fetch all the learning content items from DynamoDB
-  const learningContent = await getLearningContent('');
+// export async function getStaticPaths() {
+//   // Fetch all the learning content items from DynamoDB
+//   const learningContent = await getLearningContent('');
 
-  // Generate paths for all the learning content items
-  const paths = learningContent.map((item) => ({
-    params: { id: item.id },
-  }));
+//   // Generate paths for all the learning content items
+//   const paths = learningContent.map((item) => ({
+//     params: { id: item.id },
+//   }));
 
-  return {
-    paths,
-    fallback: true,
-  };
-}
-export async function getStaticProps({ params }: { params: { id: string } }) {
-  try {
-    // Fetch the learning content item with the specified ID
-    const learningContent = await getLearningContentItem(params.id);
+//   return {
+//     paths,
+//     fallback: true,
+//   };
+// }
+// export async function getStaticProps({ params }: { params: { id: string } }) {
+//   try {
+//     // Fetch the learning content item with the specified ID
+//     const learningContent = await getLearningContentItem(params.id);
 
-    return {
-      props: {
-        learningContent,
-      },
-    };
-  } catch (error) {
-    console.error("Error fetching learning content:", error);
-    return {
-      props: {
-        learningContent: null,
-      },
-    };
-  }
-}
+//     return {
+//       props: {
+//         learningContent,
+//       },
+//     };
+//   } catch (error) {
+//     console.error("Error fetching learning content:", error);
+//     return {
+//       props: {
+//         learningContent: null,
+//       },
+//     };
+//   }
+// }
 
 
 export default FlashcardPage;
