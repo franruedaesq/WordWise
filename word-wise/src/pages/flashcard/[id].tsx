@@ -10,13 +10,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Navigation } from "swiper";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { LearningContentState } from '@/types/store';
 import { selectLearningContentById } from '@/store/selectors/openAI';
-
-
-// interface Props {
-//   learningContent: LearningContent;
-// }
 
 const FlashcardPage: React.FC = () => {
 
@@ -28,12 +22,12 @@ const FlashcardPage: React.FC = () => {
 
   const [currentFlashcardIndex, setCurrentFlashcardIndex] = useState<number>(0);
   const handleSuccess = (index: number) => {
-    console.log(index)
+    // console.log(index)
     // setCurrentFlashcardIndex(currentFlashcardIndex + 1)
   };
 
   const handleError = (index: number) => {
-    console.log(index)
+    // console.log(index)
     // setCurrentFlashcardIndex(currentFlashcardIndex + 1)
   };
 
@@ -117,41 +111,5 @@ const FlashcardPage: React.FC = () => {
     );
   }
 };
-
-
-// export async function getStaticPaths() {
-//   // Fetch all the learning content items from DynamoDB
-//   const learningContent = await getLearningContent('');
-
-//   // Generate paths for all the learning content items
-//   const paths = learningContent.map((item) => ({
-//     params: { id: item.id },
-//   }));
-
-//   return {
-//     paths,
-//     fallback: true,
-//   };
-// }
-// export async function getStaticProps({ params }: { params: { id: string } }) {
-//   try {
-//     // Fetch the learning content item with the specified ID
-//     const learningContent = await getLearningContentItem(params.id);
-
-//     return {
-//       props: {
-//         learningContent,
-//       },
-//     };
-//   } catch (error) {
-//     console.error("Error fetching learning content:", error);
-//     return {
-//       props: {
-//         learningContent: null,
-//       },
-//     };
-//   }
-// }
-
 
 export default FlashcardPage;
