@@ -1,7 +1,6 @@
 import { FlashCardObject, LearningContent } from '@/types';
+import { LearningContentState } from '@/types/store';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-interface LearningContentState extends Array<LearningContent> {}
 
 const openAIreducer = createSlice({
     name: 'openAIreducer',
@@ -18,7 +17,7 @@ const openAIreducer = createSlice({
       },
       addData: (state, action: PayloadAction<LearningContent[]>) => {
         return [...state, ...action.payload];
-      }
+      },
     },
   });
   
